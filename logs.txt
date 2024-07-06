@@ -1,0 +1,11 @@
+
+==> Audit <==
+|---------|------|---------|------|---------|------------|----------|
+| Command | Args | Profile | User | Version | Start Time | End Time |
+|---------|------|---------|------|---------|------------|----------|
+|---------|------|---------|------|---------|------------|----------|
+
+
+==> Last Start <==
+Last start log file not found at /home/debian/.minikube/logs/lastStart.txt
+
