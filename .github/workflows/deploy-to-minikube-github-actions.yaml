@@ -1,7 +1,5 @@
 name: Deploy to Minikube using GitHub Actions
-
 on: [push]
-  
 jobs:
   job1:
     runs-on: ubuntu-latest
@@ -16,12 +14,26 @@ jobs:
       run: |
           export SHELL=/bin/bash
           eval $(minikube -p minikube docker-env)
-          docker build -f ./Dockerfile -t devopshint/node-app:latest .
+          docker build -f ./Dockerfile -t node-app:latest .
           echo -n "verifying images:"
-          docker images         
+          docker images
     - name: Deploy to minikube
       run:
         kubectl apply -f k8s-node-app.yaml
+    - name: Debug Deployment
+      run: |
+        echo "Pods:"
+        kubectl get pods
+        echo "Deployments:"
+        kubectl get deployments
+        echo "Services:"
+        kubectl get services
+        echo "Pod Details:"
+        kubectl describe pods
+        echo "Deployment Details:"
+        kubectl describe deployment nodejs-app
+        echo "Logs:"
+        kubectl logs -l app=nodejs-app --tail=50
     - name: Test service URLs
       run: |
           minikube service list
