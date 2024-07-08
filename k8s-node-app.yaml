@@ -1,7 +1,11 @@
-apiVersion: apps/v1
+---
 kind: Deployment
+apiVersion: apps/v1
 metadata:
   name: nodejs-app
+  namespace: default
+  labels:
+    app: nodejs-app
 spec:
   replicas: 1
   selector:
@@ -14,32 +18,20 @@ spec:
     spec:
       containers:
       - name: nodejs-app
-        image: node-app:latest
-        imagePullPolicy: Never
+        image: "devopshint/node-app:latest"
         ports:
           - containerPort: 3000
-        resources:
-          limits:
-            cpu: "500m"
-            memory: "512Mi"
-          requests:
-            cpu: "250m"
-            memory: "256Mi"
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 3000
-          initialDelaySeconds: 10
-          periodSeconds: 5
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: nodejs-app
+  namespace: default
 spec:
   selector:
     app: nodejs-app
   type: NodePort
   ports:
-  - port: 80
+  - name: http
     targetPort: 3000
+    port: 80
