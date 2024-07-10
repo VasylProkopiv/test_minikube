@@ -1,54 +1,25 @@
-name: Deploy to Minikube using GitHub Actions
-
-on: [push]
-
 jobs:
   job1:
     runs-on: ubuntu-latest
     name: build Node.js Docker Image and deploy to minikube
     steps:
     - uses: actions/checkout@v2
-
     - name: Start minikube
       uses: medyagh/setup-minikube@master
-
     - name: Try the cluster !
       run: kubectl get pods -A
-
     - name: Build image
       run: |
-        export SHELL=/bin/bash
-        eval $(minikube -p minikube docker-env)
-        docker build -f ./Dockerfile -t devopshint/node-app:latest .
-        echo -n "verifying images:"
-        docker images
-
+          export SHELL=/bin/bash
+          eval $(minikube -p minikube docker-env)
+          docker build -f ./Dockerfile -t devopshint/node-app:latest .
+          echo -n "verifying images:"
+          docker images         
     - name: Deploy to minikube
-      run: |
+      run:
         kubectl apply -f k8s-node-app.yaml
         kubectl wait --for=condition=available --timeout=300s deployment/nodejs-app
-
-    - name: Check pod status
-      run: |
-        kubectl get pods
-        kubectl describe pod -l app=nodejs-app
-
-    - name: Check pod logs
-      run: kubectl logs -l app=nodejs-app
-
-    - name: Check Kubernetes events
-      run: kubectl get events --sort-by=.metadata.creationTimestamp
-
     - name: Test service URLs
       run: |
-        minikube service list
-        minikube service nodejs-app --url
-        curl $(minikube service nodejs-app --url)
-
-    - name: Debug if service is unreachable
-      if: failure()
-      run: |
-        kubectl get all
-        kubectl describe deployment nodejs-app
-        kubectl describe service nodejs-app
-        minikube logs
+          minikube service list
+          minikube service nodejs-app --url
